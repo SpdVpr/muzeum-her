@@ -1,0 +1,58 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper funkce pro kontrolu autentizace (připraveno pro budoucnost)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.admin == true;
+    }
+    
+    // CODE RANGES - Řady EAN kódů
+    // Read: Všichni (terminály potřebují číst)
+    // Write: Všichni (PRO TESTOVÁNÍ - později změň na isAdmin())
+    match /code_ranges/{rangeId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // TICKETS - Vstupenky
+    // Read/Write: Všichni (terminály potřebují vytvářet a aktualizovat)
+    match /tickets/{ticketId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
+    }
+    
+    // EVENTS - Log událostí
+    // Create: Všichni (terminály logují události)
+    // Read: Všichni (PRO TESTOVÁNÍ - později změň na isAdmin())
+    match /events/{eventId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if false;
+      allow delete: if true;
+    }
+    
+    // TERMINALS - Konfigurace terminálů
+    // Read: Všichni (terminály potřebují číst svou konfiguraci)
+    // Write: Všichni (PRO TESTOVÁNÍ - později změň na isAdmin())
+    match /terminals/{terminalId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // SETTINGS - Globální nastavení (volitelné)
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
+
