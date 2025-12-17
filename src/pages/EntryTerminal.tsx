@@ -110,11 +110,11 @@ export const EntryTerminal: React.FC = () => {
           // Kontrola, zda má ještě zbývající čas
           if (ticket.remainingMinutes <= 0) {
             setScanState('error');
-            setMessage('Váš čas vypršel. Prosím zaplaťte novou vstupenku.');
+            setMessage('ČAS BYL VYČERPÁN');
             setTimeout(() => {
               setScanState('idle');
               setMessage('');
-            }, 5000);
+            }, 7000); // Delší timeout pro přečtení dodatečné informace
             return;
           }
 
@@ -251,29 +251,46 @@ export const EntryTerminal: React.FC = () => {
 
   // Error stav
   if (scanState === 'error') {
+    const isTimeExpired = message === 'ČAS BYL VYČERPÁN';
+
     return (
       <KioskLayout backgroundColor={colors.error}>
         <div className="flex-column flex-center text-center animate-shake">
           <div style={{ fontSize: 'clamp(5rem, 10vw, 8rem)', marginBottom: '2rem' }}>
-            ✗
+            {isTimeExpired ? '⏱' : '✗'}
           </div>
-          
+
           <h1 className="kiosk-title" style={{ color: colors.white }}>
-            CHYBA
+            {isTimeExpired ? message : 'CHYBA'}
           </h1>
-          
-          <p className="kiosk-message" style={{ color: colors.white, marginTop: '2rem' }}>
-            {message}
-          </p>
-          
-          <p style={{ 
-            fontSize: 'clamp(1.5rem, 3vw, 2rem)', 
-            color: colors.white, 
+
+          {!isTimeExpired && (
+            <p className="kiosk-message" style={{ color: colors.white, marginTop: '2rem' }}>
+              {message}
+            </p>
+          )}
+
+          <p style={{
+            fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+            color: colors.white,
             marginTop: '3rem',
-            opacity: 0.9 
+            opacity: 0.9
           }}>
-            Kontaktujte prosím obsluhu
+            {isTimeExpired ? 'Prosím zaplaťte novou vstupenku' : 'Kontaktujte prosím obsluhu'}
           </p>
+
+          {isTimeExpired && (
+            <p style={{
+              fontSize: 'clamp(1rem, 2vw, 1.5rem)',
+              color: colors.white,
+              marginTop: '2rem',
+              opacity: 0.7,
+              maxWidth: '80%',
+              lineHeight: 1.4
+            }}>
+              Vstupenky jsou nepřenosné a platí pouze jeden den
+            </p>
+          )}
         </div>
       </KioskLayout>
     );

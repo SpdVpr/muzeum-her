@@ -62,11 +62,11 @@ export const ExitTerminal: React.FC = () => {
       // 3. Kontrola platnosti pro dnešní den
       if (!isTicketValidToday(ticket)) {
         setScanState('error');
-        setMessage('Vstupenka expirovala');
+        setMessage('VSTUPENKA EXPIROVALA');
         setTimeout(() => {
           setScanState('idle');
           setMessage('');
-        }, 5000);
+        }, 7000);
         return;
       }
 
@@ -291,6 +291,8 @@ export const ExitTerminal: React.FC = () => {
     }
 
     // Jinak zobraz obecnou chybovou zprávu
+    const isExpired = message === 'VSTUPENKA EXPIROVALA';
+
     return (
       <KioskLayout backgroundColor={colors.error}>
         <div className="flex-column flex-center text-center animate-shake">
@@ -301,6 +303,19 @@ export const ExitTerminal: React.FC = () => {
           <h1 className="kiosk-title" style={{ color: colors.white }}>
             {message || 'Chyba'}
           </h1>
+
+          {isExpired && (
+            <p style={{
+              fontSize: 'clamp(1rem, 2vw, 1.5rem)',
+              color: colors.white,
+              marginTop: '2rem',
+              opacity: 0.7,
+              maxWidth: '80%',
+              lineHeight: 1.4
+            }}>
+              Vstupenky jsou nepřenosné a platí pouze jeden den
+            </p>
+          )}
         </div>
       </KioskLayout>
     );
