@@ -175,37 +175,31 @@ export const CheckTerminal: React.FC = () => {
 
   // Success stav
   if (scanState === 'success') {
-    const hours = Math.floor(remainingMinutes / 60);
-    const mins = remainingMinutes % 60;
-    const timeString = hours > 0 
-      ? `${hours}:${mins.toString().padStart(2, '0')}` 
-      : `${mins}`;
-
     return (
       <KioskLayout backgroundColor={getBackgroundColor()}>
         <div className="flex-column flex-center text-center animate-slide-in">
           <h1 className="kiosk-message" style={{ color: colors.white, marginBottom: '2rem' }}>
             ZBÝVAJÍCÍ ČAS:
           </h1>
-          
+
           <div className="kiosk-time" style={{ color: colors.white }}>
-            ⏱ {timeString}
+            ⏱ {remainingMinutes}
           </div>
-          
-          <p style={{ 
-            fontSize: 'clamp(2rem, 4vw, 3rem)', 
-            color: colors.white, 
+
+          <p style={{
+            fontSize: 'clamp(2rem, 4vw, 3rem)',
+            color: colors.white,
             marginTop: '1rem',
-            fontWeight: 600 
+            fontWeight: 600
           }}>
-            {hours > 0 ? 'HODIN' : 'MINUT'}
+            MINUT
           </p>
-          
+
           {remainingMinutes <= 10 && (
-            <p className="kiosk-message animate-pulse" style={{ 
-              color: colors.white, 
+            <p className="kiosk-message animate-pulse" style={{
+              color: colors.white,
               marginTop: '3rem',
-              fontWeight: 700 
+              fontWeight: 700
             }}>
               ⚠️ Brzy vám vyprší čas! ⚠️
             </p>
