@@ -218,13 +218,13 @@ export const Tickets: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: spacing.xl, maxWidth: '1920px', margin: '0 auto' }}>
+    <div style={{ padding: 'clamp(1rem, 3vw, 2rem)', maxWidth: '1920px', margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ marginBottom: spacing.xl }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: 0 }}>
+      <div style={{ marginBottom: 'clamp(1rem, 3vw, 2rem)' }}>
+        <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 700, margin: 0 }}>
           🎫 Číselné řady vstupenek
         </h1>
-        <p style={{ color: colors.textSecondary, marginTop: spacing.sm }}>
+        <p style={{ color: colors.textSecondary, marginTop: spacing.sm, fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}>
           Správa a přehled všech řad EAN kódů
         </p>
       </div>
@@ -233,9 +233,9 @@ export const Tickets: React.FC = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: spacing.lg,
-          marginBottom: spacing.xl,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(150px, 100%), 1fr))',
+          gap: 'clamp(0.75rem, 2vw, 1.5rem)',
+          marginBottom: 'clamp(1rem, 3vw, 2rem)',
         }}
       >
         <StatCard label="Celkem řad" value={stats.total} icon="📊" />

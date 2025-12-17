@@ -202,3 +202,101 @@ body {
   background: #0037FD;
 }
 
+/* ============================================================================
+   MOBILE & TOUCH OPTIMIZATIONS
+   ============================================================================ */
+
+/* Touch-friendly buttons and links */
+@media (max-width: 768px) {
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px; /* iOS recommended touch target size */
+    min-width: 44px;
+  }
+
+  /* Prevent text selection on touch */
+  body {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Better spacing for mobile */
+  .container {
+    padding: 0 1rem;
+  }
+
+  /* Larger tap targets for mobile navigation */
+  nav a,
+  nav button {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Prevent zoom on input focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Hide scrollbars on mobile for cleaner look */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  html {
+    font-size: 12px;
+  }
+}
+
+/* ============================================================================
+   ADMIN RESPONSIVE TABLES
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  /* Stack table cells vertically on mobile */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better card layouts on mobile */
+  .stat-card,
+  .card {
+    min-width: 100%;
+  }
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+
+@media print {
+  body {
+    background: white;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ensure proper page breaks */
+  .page-break {
+    page-break-after: always;
+  }
+}
+

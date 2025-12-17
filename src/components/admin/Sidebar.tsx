@@ -9,6 +9,7 @@ import { colors, spacing } from '../../config/theme';
 interface SidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
+  isMobile?: boolean;
 }
 
 const navItems = [
@@ -29,7 +30,7 @@ const terminalItems = [
   { path: '/kiosk/exit', icon: '🚶', label: 'Výstup', external: true },
 ];
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose, isMobile = false }) => {
   return (
     <aside
       style={{
@@ -39,10 +40,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
         color: colors.white,
         display: 'flex',
         flexDirection: 'column',
-        transition: 'width 0.3s ease',
+        transition: 'all 0.3s ease',
         overflow: 'hidden',
-        position: 'sticky',
+        position: isMobile ? 'fixed' : 'sticky',
         top: 0,
+        left: 0,
+        zIndex: isMobile ? 1000 : 'auto',
+        boxShadow: isMobile && isOpen ? '2px 0 8px rgba(0, 0, 0, 0.3)' : 'none',
       }}
     >
       {/* Logo */}

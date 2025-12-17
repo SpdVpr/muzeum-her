@@ -33,12 +33,12 @@ export const StatCard: React.FC<StatCardProps> = ({
       style={{
         backgroundColor: colors.cardBg,
         borderRadius: borderRadius.lg,
-        padding: spacing.xl,
+        padding: 'clamp(1rem, 3vw, 2rem)',
         boxShadow: shadows.card,
         display: 'flex',
         flexDirection: 'column',
-        gap: spacing.md,
-        minHeight: '140px',
+        gap: 'clamp(0.5rem, 2vw, 1rem)',
+        minHeight: 'clamp(120px, 20vw, 140px)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -63,13 +63,13 @@ export const StatCard: React.FC<StatCardProps> = ({
           alignItems: 'flex-start',
         }}
       >
-        <div style={{ fontSize: '0.875rem', color: colors.textSecondary, fontWeight: 500 }}>
+        <div style={{ fontSize: 'clamp(0.75rem, 2vw, 0.875rem)', color: colors.textSecondary, fontWeight: 500 }}>
           {title}
         </div>
         {icon && (
           <div
             style={{
-              fontSize: '2rem',
+              fontSize: 'clamp(1.5rem, 4vw, 2rem)',
               opacity: 0.2,
             }}
           >
@@ -81,7 +81,7 @@ export const StatCard: React.FC<StatCardProps> = ({
       {/* Value */}
       <div
         style={{
-          fontSize: 'clamp(2rem, 3vw, 2.5rem)',
+          fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
           fontWeight: 700,
           color: colors.textPrimary,
           lineHeight: 1,
@@ -91,7 +91,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           <div
             style={{
               width: '60%',
-              height: '2rem',
+              height: 'clamp(1.5rem, 4vw, 2rem)',
               backgroundColor: colors.border,
               borderRadius: borderRadius.base,
               animation: 'pulse 1.5s ease-in-out infinite',
@@ -109,7 +109,7 @@ export const StatCard: React.FC<StatCardProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: spacing.sm,
-            fontSize: '0.875rem',
+            fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
           }}
         >
           <span

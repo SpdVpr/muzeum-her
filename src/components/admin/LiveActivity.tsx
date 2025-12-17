@@ -79,12 +79,14 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 1
     return range.name;
   };
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+
   return (
     <div
       style={{
         backgroundColor: colors.cardBg,
         borderRadius: borderRadius.lg,
-        padding: spacing.xl,
+        padding: 'clamp(1rem, 3vw, 2rem)',
         boxShadow: shadows.card,
       }}
     >
@@ -99,8 +101,8 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 1
           borderBottom: `1px solid ${colors.border}`,
         }}
       >
-        <span style={{ fontSize: '1.5rem' }}>🔴</span>
-        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, margin: 0 }}>
+        <span style={{ fontSize: 'clamp(1.25rem, 3vw, 1.5rem)' }}>🔴</span>
+        <h3 style={{ fontSize: 'clamp(1rem, 2.5vw, 1.125rem)', fontWeight: 600, margin: 0 }}>
           LIVE AKTIVITA
         </h3>
       </div>
@@ -128,61 +130,110 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 1
                 key={event.id || index}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'auto 1fr auto auto',
-                  gap: spacing.md,
-                  alignItems: 'center',
-                  padding: spacing.md,
+                  gridTemplateColumns: isMobile ? '1fr' : 'auto 1fr auto auto',
+                  gap: spacing.sm,
+                  alignItems: isMobile ? 'flex-start' : 'center',
+                  padding: 'clamp(0.75rem, 2vw, 1rem)',
                   backgroundColor: colors.background,
                   borderRadius: borderRadius.base,
-                  fontSize: '0.875rem',
+                  fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
                   borderLeft: `3px solid ${eventColor}`,
                 }}
               >
-                {/* Time */}
-                <div style={{ color: colors.textSecondary, fontWeight: 500, minWidth: '50px' }}>
-                  {formatTime(event.timestamp.toDate())}
-                </div>
-
-                {/* EAN + Ticket Name */}
-                <div>
-                  <div style={{ color: colors.textPrimary, fontFamily: 'monospace', fontWeight: 600 }}>
-                    EAN: {formatEAN(event.ean)}
-                  </div>
-                  {ticketName && (
-                    <div style={{ fontSize: '0.75rem', color: colors.textSecondary, marginTop: '2px' }}>
-                      {ticketName}
+                {isMobile ? (
+                  // Mobile layout - stacked
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ color: colors.textSecondary, fontWeight: 500 }}>
+                        {formatTime(event.timestamp.toDate())}
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: spacing.sm,
+                          color: eventColor,
+                          fontWeight: 600,
+                        }}
+                      >
+                        <span>{getEventIcon(event.type)}</span>
+                        <span>{getEventLabel(event.type)}</span>
+                      </div>
                     </div>
-                  )}
-                </div>
+                    <div>
+                      <div style={{ color: colors.textPrimary, fontFamily: 'monospace', fontWeight: 600 }}>
+                        EAN: {formatEAN(event.ean)}
+                      </div>
+                      {ticketName && (
+                        <div style={{ fontSize: '0.7rem', color: colors.textSecondary, marginTop: '2px' }}>
+                          {ticketName}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ color: colors.textSecondary }}>
+                      {isOverstay ? (
+                        <span style={{ color: colors.error, fontWeight: 600 }}>
+                          ⚠ Doplatek {event.overstayMinutes} min
+                        </span>
+                      ) : event.type === 'ENTRY' ? (
+                        <span>Čas: {event.remainingMinutes} min</span>
+                      ) : event.type === 'CHECK' ? (
+                        <span>Zbývalo: {event.remainingMinutes} min</span>
+                      ) : (
+                        <span>Zbývalo: {event.remainingMinutes} min</span>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  // Desktop layout - horizontal
+                  <>
+                    {/* Time */}
+                    <div style={{ color: colors.textSecondary, fontWeight: 500, minWidth: '50px' }}>
+                      {formatTime(event.timestamp.toDate())}
+                    </div>
 
-                {/* Type */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: spacing.sm,
-                    color: eventColor,
-                    fontWeight: 600,
-                  }}
-                >
-                  <span>{getEventIcon(event.type)}</span>
-                  <span>{getEventLabel(event.type)}</span>
-                </div>
+                    {/* EAN + Ticket Name */}
+                    <div>
+                      <div style={{ color: colors.textPrimary, fontFamily: 'monospace', fontWeight: 600 }}>
+                        EAN: {formatEAN(event.ean)}
+                      </div>
+                      {ticketName && (
+                        <div style={{ fontSize: '0.75rem', color: colors.textSecondary, marginTop: '2px' }}>
+                          {ticketName}
+                        </div>
+                      )}
+                    </div>
 
-                {/* Info */}
-                <div style={{ color: colors.textSecondary, textAlign: 'right', minWidth: '120px' }}>
-                  {isOverstay ? (
-                    <span style={{ color: colors.error, fontWeight: 600 }}>
-                      ⚠ Doplatek {event.overstayMinutes} min
-                    </span>
-                  ) : event.type === 'ENTRY' ? (
-                    <span>Čas: {event.remainingMinutes} min</span>
-                  ) : event.type === 'CHECK' ? (
-                    <span>Zbývalo: {event.remainingMinutes} min</span>
-                  ) : (
-                    <span>Zbývalo: {event.remainingMinutes} min</span>
-                  )}
-                </div>
+                    {/* Type */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: spacing.sm,
+                        color: eventColor,
+                        fontWeight: 600,
+                      }}
+                    >
+                      <span>{getEventIcon(event.type)}</span>
+                      <span>{getEventLabel(event.type)}</span>
+                    </div>
+
+                    {/* Info */}
+                    <div style={{ color: colors.textSecondary, textAlign: 'right', minWidth: '120px' }}>
+                      {isOverstay ? (
+                        <span style={{ color: colors.error, fontWeight: 600 }}>
+                          ⚠ Doplatek {event.overstayMinutes} min
+                        </span>
+                      ) : event.type === 'ENTRY' ? (
+                        <span>Čas: {event.remainingMinutes} min</span>
+                      ) : event.type === 'CHECK' ? (
+                        <span>Zbývalo: {event.remainingMinutes} min</span>
+                      ) : (
+                        <span>Zbývalo: {event.remainingMinutes} min</span>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             );
           })

@@ -204,21 +204,23 @@ export const Dashboard: React.FC = () => {
   }, [recentEvents.length, loading]);
 
   return (
-    <div style={{ padding: spacing.xl, maxWidth: '1920px', margin: '0 auto' }}>
+    <div style={{ padding: 'clamp(1rem, 3vw, 2rem)', maxWidth: '1920px', margin: '0 auto' }}>
       {/* Header */}
       <div
         style={{
           display: 'flex',
+          flexDirection: window.innerWidth < 640 ? 'column' : 'row',
           justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: spacing.xl,
+          alignItems: window.innerWidth < 640 ? 'flex-start' : 'center',
+          marginBottom: 'clamp(1rem, 3vw, 2rem)',
+          gap: spacing.md,
         }}
       >
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: 0 }}>
+          <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 700, margin: 0 }}>
             📊 Dashboard
           </h1>
-          <p style={{ color: colors.textSecondary, marginTop: spacing.sm }}>
+          <p style={{ color: colors.textSecondary, marginTop: spacing.sm, fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}>
             Přehled aktuálního stavu a statistik
           </p>
         </div>
@@ -227,7 +229,7 @@ export const Dashboard: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             gap: spacing.md,
-            fontSize: '0.875rem',
+            fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
             color: colors.textSecondary,
           }}
         >
@@ -240,9 +242,9 @@ export const Dashboard: React.FC = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: spacing.lg,
-          marginBottom: spacing.xl,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(250px, 100%), 1fr))',
+          gap: 'clamp(0.75rem, 2vw, 1.5rem)',
+          marginBottom: 'clamp(1rem, 3vw, 2rem)',
         }}
       >
         <StatCard
@@ -282,9 +284,9 @@ export const Dashboard: React.FC = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-          gap: spacing.xl,
-          marginBottom: spacing.xl,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))',
+          gap: 'clamp(1rem, 3vw, 2rem)',
+          marginBottom: 'clamp(1rem, 3vw, 2rem)',
         }}
       >
         {/* Průměrná doba návštěvy */}
@@ -292,20 +294,20 @@ export const Dashboard: React.FC = () => {
           style={{
             backgroundColor: colors.cardBg,
             borderRadius: '12px',
-            padding: spacing.xl,
+            padding: 'clamp(1rem, 3vw, 2rem)',
             boxShadow: '0 0 30px -8px rgba(0, 0, 0, 0.24)',
           }}
         >
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: spacing.lg }}>
+          <h3 style={{ fontSize: 'clamp(1rem, 2.5vw, 1.125rem)', fontWeight: 600, marginBottom: spacing.lg }}>
             ⏱ Průměrná doba návštěvy
           </h3>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', fontWeight: 700, color: colors.primary }}>
+            <div style={{ fontSize: 'clamp(2rem, 6vw, 3rem)', fontWeight: 700, color: colors.primary }}>
               {Math.floor(stats.averageVisitMinutes / 60)}:{(stats.averageVisitMinutes % 60)
                 .toString()
                 .padStart(2, '0')}
             </div>
-            <div style={{ color: colors.textSecondary, marginTop: spacing.sm }}>
+            <div style={{ color: colors.textSecondary, marginTop: spacing.sm, fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}>
               hodin
             </div>
           </div>
@@ -316,18 +318,18 @@ export const Dashboard: React.FC = () => {
           style={{
             backgroundColor: colors.cardBg,
             borderRadius: '12px',
-            padding: spacing.xl,
+            padding: 'clamp(1rem, 3vw, 2rem)',
             boxShadow: '0 0 30px -8px rgba(0, 0, 0, 0.24)',
           }}
         >
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: spacing.lg }}>
+          <h3 style={{ fontSize: 'clamp(1rem, 2.5vw, 1.125rem)', fontWeight: 600, marginBottom: spacing.lg }}>
             💵 Tržby dnes
           </h3>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', fontWeight: 700, color: colors.success }}>
+            <div style={{ fontSize: 'clamp(1.5rem, 5vw, 3rem)', fontWeight: 700, color: colors.success }}>
               {stats.todayRevenue.toLocaleString('cs-CZ')} Kč
             </div>
-            <div style={{ color: colors.textSecondary, marginTop: spacing.sm }}>
+            <div style={{ color: colors.textSecondary, marginTop: spacing.sm, fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}>
               + {stats.todayOverstayRevenue} Kč doplatky
             </div>
           </div>
