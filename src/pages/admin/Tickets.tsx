@@ -834,15 +834,33 @@ export const Tickets: React.FC = () => {
                 border: '2px solid #e0e0e0',
               }}
             >
-              <Barcode
-                value={selectedEAN}
-                format={selectedEAN.length === 8 ? "EAN8" : selectedEAN.length === 13 ? "EAN13" : "CODE128"}
-                width={2}
-                height={100}
-                displayValue={true}
-                fontSize={20}
-                margin={10}
-              />
+              {(() => {
+                try {
+                  return (
+                    <Barcode
+                      value={selectedEAN}
+                      format="CODE128"
+                      width={2}
+                      height={100}
+                      displayValue={true}
+                      fontSize={20}
+                      margin={10}
+                    />
+                  );
+                } catch (error) {
+                  console.error('Barcode generation error:', error);
+                  return (
+                    <div style={{ padding: spacing.xl, textAlign: 'center', color: colors.error }}>
+                      <p style={{ fontSize: '1rem', marginBottom: spacing.sm }}>
+                        ⚠️ Nelze vygenerovat čárový kód
+                      </p>
+                      <p style={{ fontSize: '0.875rem', color: colors.textSecondary }}>
+                        EAN kód: {selectedEAN}
+                      </p>
+                    </div>
+                  );
+                }
+              })()}
             </div>
 
             <div style={{ marginBottom: spacing.lg }}>
