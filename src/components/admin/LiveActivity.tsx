@@ -55,10 +55,15 @@ const getEventLabel = (type: EventType): string => {
 };
 
 const formatTime = (timestamp: Date): string => {
-  return timestamp.toLocaleTimeString('cs-CZ', {
+  const date = timestamp.toLocaleDateString('cs-CZ', {
+    day: '2-digit',
+    month: '2-digit',
+  });
+  const time = timestamp.toLocaleTimeString('cs-CZ', {
     hour: '2-digit',
     minute: '2-digit',
   });
+  return `${date} ${time}`;
 };
 
 const formatEAN = (ean: string): string => {
@@ -188,7 +193,7 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 1
                   // Desktop layout - horizontal
                   <>
                     {/* Time */}
-                    <div style={{ color: colors.textSecondary, fontWeight: 500, minWidth: '50px' }}>
+                    <div style={{ color: colors.textSecondary, fontWeight: 500, minWidth: '100px' }}>
                       {formatTime(event.timestamp.toDate())}
                     </div>
 
