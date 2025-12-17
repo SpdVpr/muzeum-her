@@ -92,6 +92,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose, isMobi
             key={item.path}
             to={item.path}
             end={item.exact}
+            onClick={() => {
+              // Zavři menu na mobilu po kliknutí
+              if (isMobile && onClose) {
+                onClose();
+              }
+            }}
             style={({ isActive }) => ({
               display: 'flex',
               alignItems: 'center',
@@ -136,6 +142,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose, isMobi
             href={item.path}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => {
+              // Zavři menu na mobilu po kliknutí
+              if (isMobile && onClose) {
+                onClose();
+              }
+            }}
             style={{
               display: 'flex',
               alignItems: 'center',
