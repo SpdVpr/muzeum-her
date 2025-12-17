@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { collection, doc, setDoc, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { colors, spacing, borderRadius, shadows } from '../../config/theme';
 import seedData from '../../../firebase-seed-data.json';
@@ -135,7 +135,7 @@ export const Setup: React.FC = () => {
           <div
             style={{
               padding: spacing.md,
-              backgroundColor: colors.infoBg,
+              backgroundColor: colors.info,
               borderRadius: borderRadius.base,
               marginBottom: spacing.md,
               color: colors.primary,

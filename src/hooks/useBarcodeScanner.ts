@@ -39,7 +39,7 @@ export function useBarcodeScanner(
 ) {
   const fullConfig = { ...DEFAULT_CONFIG, ...config };
   const bufferRef = useRef<string>('');
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<number | null>(null);
   const lastScanRef = useRef<number>(0);
   const isProcessingRef = useRef<boolean>(false);
 

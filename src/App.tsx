@@ -3,7 +3,6 @@
  * Routing pro Entry/Check/Exit terminály a Admin
  */
 
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { EntryTerminal } from './pages/EntryTerminal';
 import { CheckTerminal } from './pages/CheckTerminal';

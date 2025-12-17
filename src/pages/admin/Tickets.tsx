@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { colors, spacing, borderRadius, shadows } from '../../config/theme';
-import type { CodeRange } from '../../types';
+import type { CodeRange, Ticket } from '../../types';
 import Barcode from 'react-barcode';
 
 export const Tickets: React.FC = () => {

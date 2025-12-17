@@ -30,10 +30,7 @@ export const auth = getAuth(app);
 
 // Zapnutí offline persistence
 // Toto umožní aplikaci fungovat i bez internetu
-enableIndexedDbPersistence(db, {
-  // Synchronizace na pozadí
-  synchronizeTabs: true
-}).catch((err) => {
+enableIndexedDbPersistence(db).catch((err) => {
   if (err.code === 'failed-precondition') {
     // Více tabů otevřených najednou
     console.warn('Offline persistence: Multiple tabs open, persistence enabled in first tab only.');

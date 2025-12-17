@@ -5,7 +5,6 @@
 
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import type { Ticket } from '../types';
 
 export async function migrateTicketsAddRemainingMinutes() {
   console.log('🔄 Migrace vstupenek - přidání remainingMinutes...');

@@ -172,7 +172,7 @@ export function isTicketExpired(ticket: Ticket): boolean {
  * Vytvoření nové vstupenky
  */
 export function createNewTicket(
-  ean: string,
+  _ean: string,
   rangeId: string,
   allowedMinutes: number
 ): Omit<Ticket, 'ean'> {

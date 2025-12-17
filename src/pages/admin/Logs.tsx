@@ -11,7 +11,7 @@ import type { Event, CodeRange } from '../../types';
 
 export const Logs: React.FC = () => {
   const [events, setEvents] = useState<(Event & { id: string })[]>([]);
-  const [codeRanges, setCodeRanges] = useState<Record<string, CodeRange>>({});
+  const [_codeRanges, setCodeRanges] = useState<Record<string, CodeRange>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'ENTRY' | 'CHECK' | 'EXIT'>('all');
   const [searchTerm, setSearchTerm] = useState('');
