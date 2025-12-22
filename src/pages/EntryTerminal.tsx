@@ -12,6 +12,7 @@ import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import { colors } from '../config/theme';
 import type { ScanState, CodeRange, Ticket } from '../types';
 import { isValidEAN, findCodeRange, isTicketValidToday, createNewTicket } from '../utils/validation';
+import { TestTicketButtons } from '../components/kiosk/TestTicketButtons';
 
 export const EntryTerminal: React.FC = () => {
   const [scanState, setScanState] = useState<ScanState>('idle');
@@ -196,13 +197,14 @@ export const EntryTerminal: React.FC = () => {
           <h1 className="kiosk-title" style={{ color: colors.white, marginBottom: '3rem' }}>
             🎮 VÍTEJTE V MUZEU HER 🎮
           </h1>
-          
+
           <BarcodeIcon animate size={300} color={colors.primary} />
-          
+
           <p className="kiosk-message" style={{ color: colors.white, marginTop: '3rem' }}>
             Přiložte vstupenku k čtečce
           </p>
         </div>
+        <TestTicketButtons onScan={handleScan} mode="entry" />
       </KioskLayout>
     );
   }
@@ -228,19 +230,19 @@ export const EntryTerminal: React.FC = () => {
           <div style={{ fontSize: 'clamp(5rem, 10vw, 8rem)', marginBottom: '2rem' }}>
             ✓
           </div>
-          
+
           <h1 className="kiosk-title" style={{ color: colors.white }}>
             {message}
           </h1>
-          
+
           <p className="kiosk-message" style={{ color: colors.white, marginTop: '2rem' }}>
             Máte k dispozici:
           </p>
-          
+
           <div className="kiosk-time" style={{ color: colors.white, marginTop: '1rem' }}>
             ⏱ {allowedMinutes} MINUT
           </div>
-          
+
           <p className="kiosk-message" style={{ color: colors.white, marginTop: '3rem', opacity: 0.9 }}>
             Užijte si návštěvu!
           </p>

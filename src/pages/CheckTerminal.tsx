@@ -12,6 +12,7 @@ import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import { colors } from '../config/theme';
 import type { ScanState, Ticket } from '../types';
 import { isValidEAN, calculateRemainingMinutes, isTicketValidToday } from '../utils/validation';
+import { TestTicketButtons } from '../components/kiosk/TestTicketButtons';
 
 export const CheckTerminal: React.FC = () => {
   const [scanState, setScanState] = useState<ScanState>('idle');
@@ -140,22 +141,23 @@ export const CheckTerminal: React.FC = () => {
           <h1 className="kiosk-title" style={{ color: colors.white, marginBottom: '3rem' }}>
             KONTROLA ČASU
           </h1>
-          
+
           <BarcodeIcon animate size={300} color={colors.info} />
-          
+
           <p className="kiosk-message" style={{ color: colors.white, marginTop: '3rem' }}>
             Zkontrolujte zbývající čas
           </p>
-          
-          <p style={{ 
-            fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)', 
-            color: colors.white, 
+
+          <p style={{
+            fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)',
+            color: colors.white,
             marginTop: '2rem',
-            opacity: 0.7 
+            opacity: 0.7
           }}>
             Přiložte vstupenku k čtečce
           </p>
         </div>
+        <TestTicketButtons onScan={handleScan} mode="check" />
       </KioskLayout>
     );
   }

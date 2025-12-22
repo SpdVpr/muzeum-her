@@ -12,6 +12,7 @@ import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import { colors } from '../config/theme';
 import type { ScanState, Ticket, CodeRange } from '../types';
 import { isValidEAN, calculateRemainingMinutes, isTicketValidToday } from '../utils/validation';
+import { TestTicketButtons } from '../components/kiosk/TestTicketButtons';
 
 export const ExitTerminal: React.FC = () => {
   const [scanState, setScanState] = useState<ScanState>('idle');
@@ -175,13 +176,14 @@ export const ExitTerminal: React.FC = () => {
           <h1 className="kiosk-title" style={{ color: colors.white, marginBottom: '3rem' }}>
             ODCHOD
           </h1>
-          
+
           <BarcodeIcon animate size={300} color={colors.primary} />
-          
+
           <p className="kiosk-message" style={{ color: colors.white, marginTop: '3rem' }}>
             Přiložte vstupenku pro odchod
           </p>
         </div>
+        <TestTicketButtons onScan={handleScan} mode="exit" />
       </KioskLayout>
     );
   }
@@ -207,32 +209,32 @@ export const ExitTerminal: React.FC = () => {
           <div style={{ fontSize: 'clamp(5rem, 10vw, 8rem)', marginBottom: '2rem' }}>
             ✓
           </div>
-          
+
           <h1 className="kiosk-title" style={{ color: colors.white }}>
             DĚKUJEME ZA NÁVŠTĚVU!
           </h1>
-          
+
           {remainingMinutes > 0 && (
             <>
               <p className="kiosk-message" style={{ color: colors.white, marginTop: '2rem' }}>
                 Zbývalo vám:
               </p>
-              
-              <div style={{ 
-                fontSize: 'clamp(3rem, 6vw, 5rem)', 
-                color: colors.white, 
+
+              <div style={{
+                fontSize: 'clamp(3rem, 6vw, 5rem)',
+                color: colors.white,
                 marginTop: '1rem',
-                fontWeight: 700 
+                fontWeight: 700
               }}>
                 {remainingMinutes} minut
               </div>
             </>
           )}
-          
-          <p className="kiosk-message" style={{ 
-            color: colors.white, 
+
+          <p className="kiosk-message" style={{
+            color: colors.white,
             marginTop: '3rem',
-            opacity: 0.9 
+            opacity: 0.9
           }}>
             Těšíme se na viděnou!
           </p>
