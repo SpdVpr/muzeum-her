@@ -7,10 +7,12 @@ import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { colors } from '../../config/theme';
+import { useAuth } from '../../contexts/AuthContext';
 
 export const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { user, logout } = useAuth();
 
   // Detekce mobilního zařízení
   useEffect(() => {
@@ -132,6 +134,12 @@ export const AdminLayout: React.FC = () => {
                 borderRadius: '8px',
                 cursor: 'pointer',
               }}
+              onClick={() => {
+                if (window.confirm('Opravdu se chcete odhlásit?')) {
+                  logout();
+                }
+              }}
+              title="Odhlásit se"
             >
               <div
                 style={{
@@ -147,10 +155,17 @@ export const AdminLayout: React.FC = () => {
                   fontSize: '0.875rem',
                 }}
               >
-                A
+                {user?.username.charAt(0).toUpperCase()}
               </div>
               {!isMobile && (
-                <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>Admin</span>
+                <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>
+                  {user?.branchName || user?.username}
+                </span>
+              )}
+              {!isMobile && (
+                <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>
+                  (Odhlásit)
+                </span>
               )}
             </div>
           </div>

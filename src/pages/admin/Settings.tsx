@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, getDocs, writeBatch } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { colors, spacing, borderRadius, shadows } from '../../config/theme';
 
@@ -50,6 +50,40 @@ export const Settings: React.FC = () => {
 
     loadSettings();
   }, []);
+
+  const handleClearEvents = async () => {
+    if (!window.confirm('⚠️ POZOR: Opravdu chcete smazat VŠECHNY záznamy o průchodech (events)?\n\nStatistiky se vynulují. Lístky zůstanou ve stavu, v jakém jsou (INSIDE/LEFT).\n\nTato akce je nevratná!')) return;
+
+    setSaving(true);
+    try {
+      const q = query(collection(db, 'events'));
+      const snapshot = await getDocs(q);
+      const batchSize = 400;
+      const batches = [];
+      let batch = writeBatch(db);
+      let count = 0;
+
+      snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+        count++;
+        if (count >= batchSize) {
+          batches.push(batch.commit());
+          batch = writeBatch(db);
+          count = 0;
+        }
+      });
+      if (count > 0) batches.push(batch.commit());
+
+      await Promise.all(batches);
+      alert('Všechny události byly úspěšně smazány.');
+      window.location.reload();
+    } catch (err: any) {
+      console.error(err);
+      alert('Chyba: ' + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -103,7 +137,7 @@ export const Settings: React.FC = () => {
       {/* General Settings */}
       <div style={{ backgroundColor: colors.cardBg, borderRadius: borderRadius.lg, padding: spacing.xl, marginBottom: spacing.xl, boxShadow: shadows.card }}>
         <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: spacing.lg }}>🏢 Obecné nastavení</h3>
-        
+
         <div style={{ display: 'grid', gap: spacing.lg }}>
           <SettingField
             label="Kapacita muzea"
@@ -113,7 +147,7 @@ export const Settings: React.FC = () => {
             suffix="osob"
             description="Maximální počet návštěvníků současně"
           />
-          
+
           <SettingField
             label="Výchozí doba návštěvy"
             value={settings.defaultDuration}
@@ -122,7 +156,7 @@ export const Settings: React.FC = () => {
             suffix="minut"
             description="Pokud není specifikováno v code_range"
           />
-          
+
           <SettingField
             label="Výchozí cena"
             value={settings.defaultPrice}
@@ -131,7 +165,7 @@ export const Settings: React.FC = () => {
             suffix="Kč"
             description="Pokud není specifikováno v code_range"
           />
-          
+
           <SettingField
             label="Výchozí doplatek za minutu"
             value={settings.defaultOverstayPrice}
@@ -146,7 +180,7 @@ export const Settings: React.FC = () => {
       {/* Relay Settings */}
       <div style={{ backgroundColor: colors.cardBg, borderRadius: borderRadius.lg, padding: spacing.xl, marginBottom: spacing.xl, boxShadow: shadows.card }}>
         <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: spacing.lg }}>🚪 Nastavení relé (dveře)</h3>
-        
+
         <div style={{ display: 'grid', gap: spacing.lg }}>
           <SettingToggle
             label="Povolit relé"
@@ -154,7 +188,7 @@ export const Settings: React.FC = () => {
             onChange={(v) => setSettings({ ...settings, relayEnabled: v })}
             description="Povolit automatické otevírání dveří"
           />
-          
+
           <SettingField
             label="Doba otevření"
             value={settings.relayDuration}
@@ -187,6 +221,33 @@ export const Settings: React.FC = () => {
             description="Email pro notifikace"
             disabled={!settings.emailNotifications}
           />
+        </div>
+      </div>
+
+      {/* Danger Zone */}
+      <div style={{ backgroundColor: colors.cardBg, borderRadius: borderRadius.lg, padding: spacing.xl, marginBottom: spacing.xl, boxShadow: shadows.card, border: `1px solid ${colors.error}40` }}>
+        <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: spacing.lg, color: colors.error }}>⚠️ Nebezpečná zóna</h3>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontWeight: 600 }}>Smazat historii událostí</div>
+            <div style={{ fontSize: '0.875rem', color: colors.textSecondary }}>Vynuluje statistiky návštěvnosti a tržeb. Neovlivní platnost lístků.</div>
+          </div>
+          <button
+            onClick={handleClearEvents}
+            type="button"
+            style={{
+              padding: '8px 16px',
+              backgroundColor: colors.error,
+              color: 'white',
+              border: 'none',
+              borderRadius: borderRadius.md,
+              cursor: 'pointer',
+              fontWeight: 600
+            }}
+          >
+            🗑️ Smazat historii
+          </button>
         </div>
       </div>
 

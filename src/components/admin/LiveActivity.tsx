@@ -12,6 +12,7 @@ interface LiveActivityProps {
   maxItems?: number;
   codeRanges: Record<string, CodeRange>;
   tickets: Record<string, Ticket>;
+  onManualLogout: (ean: string) => void;
 }
 
 const getEventIcon = (type: EventType): string => {
@@ -71,7 +72,7 @@ const formatEAN = (ean: string): string => {
   return `...${ean.slice(-7)}`;
 };
 
-export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 10, codeRanges, tickets }) => {
+export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 10, codeRanges, tickets, onManualLogout }) => {
   const displayEvents = events.slice(0, maxItems);
 
   const getTicketName = (ean: string): string => {
@@ -129,6 +130,8 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 1
             const eventColor = getEventColor(event.type, event.overstayMinutes);
             const isOverstay = event.overstayMinutes > 0;
             const ticketName = getTicketName(event.ean);
+            const ticket = tickets[event.ean];
+            const isInside = ticket?.status === 'INSIDE';
 
             return (
               <div
@@ -175,7 +178,7 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 1
                         </div>
                       )}
                     </div>
-                    <div style={{ color: colors.textSecondary }}>
+                    <div style={{ color: colors.textSecondary, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       {isOverstay ? (
                         <span style={{ color: colors.error, fontWeight: 600 }}>
                           ⚠ Doplatek {event.overstayMinutes} min
@@ -186,6 +189,24 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 1
                         <span>Zbývalo: {event.remainingMinutes} min</span>
                       ) : (
                         <span>Zbývalo: {event.remainingMinutes} min</span>
+                      )}
+
+                      {isInside && (
+                        <button
+                          onClick={() => onManualLogout(event.ean)}
+                          style={{
+                            padding: '4px 8px',
+                            backgroundColor: colors.error,
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: borderRadius.sm,
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Odhlásit
+                        </button>
                       )}
                     </div>
                   </>
@@ -223,8 +244,8 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 1
                       <span>{getEventLabel(event.type)}</span>
                     </div>
 
-                    {/* Info */}
-                    <div style={{ color: colors.textSecondary, textAlign: 'right', minWidth: '120px' }}>
+                    {/* Info + Actions */}
+                    <div style={{ color: colors.textSecondary, textAlign: 'right', minWidth: '120px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                       {isOverstay ? (
                         <span style={{ color: colors.error, fontWeight: 600 }}>
                           ⚠ Doplatek {event.overstayMinutes} min
@@ -235,6 +256,25 @@ export const LiveActivity: React.FC<LiveActivityProps> = ({ events, maxItems = 1
                         <span>Zbývalo: {event.remainingMinutes} min</span>
                       ) : (
                         <span>Zbývalo: {event.remainingMinutes} min</span>
+                      )}
+
+                      {isInside && (
+                        <button
+                          onClick={() => onManualLogout(event.ean)}
+                          style={{
+                            padding: '2px 8px',
+                            backgroundColor: colors.error,
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            marginTop: '4px'
+                          }}
+                        >
+                          Odhlásit
+                        </button>
                       )}
                     </div>
                   </>

@@ -15,7 +15,10 @@ import { Timestamp } from 'firebase/firestore';
 export interface CodeRange {
   id: string;
   name: string;                    // např. "Základní vstup"
+  description?: string;            // Popis/Vysvětlivka
   prefix: string;                  // např. "1000-1999" nebo "200*"
+  branchId?: string;               // ID pobočky (pro kterou je řada určena)
+  backgroundColor?: string;        // Barva pro odlišení v UI
   durationMinutes: number;         // např. 60
   price: number;                   // např. 150 Kč
   pricePerExtraMinute: number;     // např. 5 Kč/min
@@ -37,6 +40,7 @@ export type TicketStatus = 'ACTIVE' | 'INSIDE' | 'LEFT' | 'EXPIRED';
 export interface Ticket {
   ean: string;                     // Document ID
   rangeId: string;                 // Reference na code_ranges
+  branchId?: string;               // ID pobočky
   status: TicketStatus;
   firstScan: Timestamp;            // První průchod (pro validaci "jeden den")
   lastScan: Timestamp;             // Poslední skenování
@@ -161,4 +165,35 @@ export interface BarcodeScannerConfig {
  * Callback pro barcode scanner
  */
 export type BarcodeScanCallback = (code: string) => void | Promise<void>;
+
+// ============================================================================
+// AUTH & USERS
+// ============================================================================
+
+/**
+ * Role uživatele
+ */
+export type UserRole = 'ADMIN' | 'BRANCH';
+
+/**
+ * Uživatel (přihlášený do adminu)
+ */
+export interface User {
+  id: string;
+  username: string;
+  role: UserRole;
+  branchId?: string; // ID pobočky (pro filtry)
+  branchName?: string; // Název pobočky (pro zobrazení)
+}
+
+/**
+ * Definice pobočky
+ */
+export interface Branch {
+  id: string;
+  name: string;
+  location: string;
+  terminals: string[]; // IDs terminálů patřících pod pobočku
+}
+
 

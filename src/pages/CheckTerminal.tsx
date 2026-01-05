@@ -93,11 +93,14 @@ export const CheckTerminal: React.FC = () => {
       });
 
       // 7. Zaloguj event
+      const urlParams = new URLSearchParams(window.location.search);
+      const terminalId = urlParams.get('id') || 'check-1';
+
       const eventRef = doc(collection(db, 'events'));
       await setDoc(eventRef, {
         ean: normalizedEAN,
         type: 'CHECK',
-        terminalId: 'check-1',
+        terminalId: terminalId,
         timestamp: Timestamp.now(),
         remainingMinutes: remaining,
         overstayMinutes: remaining < 0 ? Math.abs(remaining) : 0,

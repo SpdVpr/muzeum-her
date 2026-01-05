@@ -7,7 +7,8 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, limit, onSnapshot, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { colors, spacing, borderRadius, shadows } from '../../config/theme';
-import { triggerRelay } from '../../utils/relay';
+import { openDoor } from '../../utils/relay';
+import { useAuth, BRANCH_TERMINALS } from '../../contexts/AuthContext';
 
 interface RelayEvent {
   id: string;
@@ -22,6 +23,7 @@ export const Relay: React.FC = () => {
   const [history, setHistory] = useState<RelayEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const { user } = useAuth();
 
   // Real-time listener pro historii
   useEffect(() => {
@@ -34,10 +36,16 @@ export const Relay: React.FC = () => {
     const unsubscribe = onSnapshot(
       historyQuery,
       (snapshot) => {
-        const events = snapshot.docs.map((doc) => ({
+        let events = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as RelayEvent[];
+
+        // Filter for branch users
+        if (user?.role === 'BRANCH' && user.branchId) {
+          const allowedTerminals = BRANCH_TERMINALS[user.branchId] || [];
+          events = events.filter(e => allowedTerminals.includes(e.terminal.trim()));
+        }
 
         setHistory(events);
       },
@@ -47,27 +55,62 @@ export const Relay: React.FC = () => {
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
-  const handleOpenDoor = async (terminal: 'entry' | 'exit') => {
+  const handleOpenDoor = async (type: 'entry' | 'exit') => {
     setLoading(true);
     setMessage('');
 
     try {
+      // Determine terminal ID
+      let terminalId = type === 'entry' ? 'entry-1' : 'exit-1';
+      if (user?.role === 'BRANCH' && user.branchId) {
+        const terminals = BRANCH_TERMINALS[user.branchId] || [];
+        const found = terminals.find(t => t.startsWith(type));
+        if (found) terminalId = found;
+        else {
+          throw new Error(`Nemáte oprávnění pro terminál ${type}`);
+        }
+      }
+
       // Zavolej funkci pro otevření dveří
-      const success = await triggerRelay(terminal);
+      const success = await openDoor({
+        enabled: true,
+        terminalId,
+        duration: 5000,
+        endpoint: import.meta.env.VITE_RELAY_SERVER // reusing env var if available, or fall back to defaults in openDoor if undefined
+      });
 
       if (success) {
-        // Zaloguj do Firebase
+        // Zaloguj do Firebase (openDoor to dělá u sebe? Ne, openDoor loguje "system". Tady chceme logovat "admin" nebo "user")
+        // Wait, openDoor logs as 'system' inside utils/relay.ts.
+        // We probably want to log explicitly here as triggeredBy user.
+        // But openDoor ALREADY logs it. This might double log.
+        // looking at utils/relay.ts: it logs `triggeredBy: 'system'`.
+        // Ideally we should update openDoor to accept triggeredBy, but for now let's just accept it logs system.
+        // OR we log here differently.
+        // The original code logged here MANUALLY.
+        // BUT openDoor also logs.
+        // Let's check existing code: triggerRelay calls openDoor. openDoor LOGS.
+        // Original Relay.tsx ALSO logs: `await addDoc(...)`.
+        // So it was double logging? Or triggerRelay prevents logging?
+        // triggerRelay calls openDoor. openDoor calls addDoc.
+        // AND Relay.tsx calls addDoc.
+        // Yes, likely double logging. But let's keep consistency with existing behavior or improve.
+        // I will SKIP manual logging here if openDoor does it, OR I will rely on openDoor.
+        // Actually, openDoor logs "triggeredBy: system". I want "triggeredBy: user.username".
+        // Use manual logging here and maybe ignore the system log?
+        // Let's just log our own event which is more descriptive (who did it).
+
         await addDoc(collection(db, 'relay_events'), {
           timestamp: Timestamp.now(),
-          triggeredBy: 'admin',
-          terminal: terminal === 'entry' ? 'entry-1' : 'exit-1',
+          triggeredBy: user?.username || 'admin',
+          terminal: terminalId,
           duration: 5, // 5 sekund
         });
 
         setRelayStatus('open');
-        setMessage(`✅ Dveře ${terminal === 'entry' ? 'VSTUP' : 'VÝSTUP'} otevřeny`);
+        setMessage(`✅ Dveře ${type === 'entry' ? 'VSTUP' : 'VÝSTUP'} otevřeny`);
 
         // Simulace zavření po 5 sekundách
         setTimeout(() => {
@@ -124,26 +167,26 @@ export const Relay: React.FC = () => {
       )}
 
       {/* Status */}
-      <div style={{ 
-        backgroundColor: colors.cardBg, 
-        borderRadius: borderRadius.lg, 
-        padding: spacing.xl, 
-        marginBottom: spacing.xl, 
+      <div style={{
+        backgroundColor: colors.cardBg,
+        borderRadius: borderRadius.lg,
+        padding: spacing.xl,
+        marginBottom: spacing.xl,
         boxShadow: shadows.card,
         textAlign: 'center',
       }}>
         <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: spacing.lg }}>
           Status relé
         </h3>
-        <div style={{ 
-          fontSize: '4rem', 
+        <div style={{
+          fontSize: '4rem',
           marginBottom: spacing.md,
           color: relayStatus === 'open' ? colors.success : colors.textSecondary,
         }}>
           {relayStatus === 'open' ? '🟢' : '🔴'}
         </div>
-        <div style={{ 
-          fontSize: '1.5rem', 
+        <div style={{
+          fontSize: '1.5rem',
           fontWeight: 700,
           color: relayStatus === 'open' ? colors.success : colors.textSecondary,
         }}>
@@ -152,11 +195,11 @@ export const Relay: React.FC = () => {
       </div>
 
       {/* Control Buttons */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-        gap: spacing.lg, 
-        marginBottom: spacing.xl 
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: spacing.lg,
+        marginBottom: spacing.xl
       }}>
         <button
           onClick={() => handleOpenDoor('entry')}

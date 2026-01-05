@@ -134,11 +134,15 @@ export const ExitTerminal: React.FC = () => {
       });
 
       // 8. Zaloguj event
+      // 8. Zaloguj event
+      const urlParams = new URLSearchParams(window.location.search);
+      const terminalId = urlParams.get('id') || 'exit-1';
+
       const eventRef = doc(collection(db, 'events'));
       await setDoc(eventRef, {
         ean: normalizedEAN,
         type: 'EXIT',
-        terminalId: 'exit-1',
+        terminalId: terminalId,
         timestamp: Timestamp.now(),
         remainingMinutes: remaining > 0 ? remaining : 0,
         overstayMinutes: remaining < 0 ? Math.abs(remaining) : 0,

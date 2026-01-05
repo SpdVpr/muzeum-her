@@ -8,6 +8,7 @@ import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore
 import { db } from '../../config/firebase';
 import { colors, spacing, borderRadius, shadows } from '../../config/theme';
 import type { Ticket, Event, CodeRange } from '../../types';
+import { useAuth, BRANCH_TERMINALS } from '../../contexts/AuthContext';
 
 export const Stats: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -22,6 +23,8 @@ export const Stats: React.FC = () => {
     byHour: [] as { hour: number; count: number }[],
   });
 
+  const { user } = useAuth();
+
   useEffect(() => {
     const loadStats = async () => {
       setLoading(true);
@@ -29,7 +32,7 @@ export const Stats: React.FC = () => {
         // Vypočítej rozsah dat
         const now = new Date();
         let startDate = new Date();
-        
+
         if (dateRange === 'today') {
           startDate.setHours(0, 0, 0, 0);
         } else if (dateRange === 'week') {
@@ -42,6 +45,29 @@ export const Stats: React.FC = () => {
 
         const startTimestamp = Timestamp.fromDate(startDate);
 
+        // Načti events (potřebujeme je pro filtrování podle pobočky)
+        const eventsSnapshot = await getDocs(
+          query(
+            collection(db, 'events'),
+            where('timestamp', '>=', startTimestamp)
+          )
+        );
+        let events = eventsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Event[];
+
+        // Filter events by branch if not admin
+        if (user && user.role === 'BRANCH' && user.branchId) {
+          const allowedTerminals = BRANCH_TERMINALS[user.branchId] || [];
+          events = events.filter(e => allowedTerminals.includes(e.terminalId));
+        }
+
+        // Získej seznam EANů, které mají ENTRY event v našem filtrovaném listu (nebo jakýkoliv event, pokud chceme vidět aktivitu)
+        // Pro správné Revenue chceme lístky co "Vstoupily" přes naši bránu, nebo byly odbaveny.
+        // Pro zjednodušení vezmeme unikátní EANy z eventů.
+        const relevantEans = new Set(events.map(e => e.ean));
+
         // Načti vstupenky
         const ticketsSnapshot = await getDocs(collection(db, 'tickets'));
         const allTickets = ticketsSnapshot.docs.map(doc => ({
@@ -49,29 +75,29 @@ export const Stats: React.FC = () => {
           ...doc.data()
         })) as Ticket[];
 
-        // Filtruj podle rozsahu
-        const tickets = allTickets.filter(t => 
-          t.firstScan && t.firstScan.toMillis() >= startTimestamp.toMillis()
-        );
+        // Filtruj lístky
+        // 1. Podle času (firstScan >= startTimestamp) - to už děláme
+        // 2. Podle toho zda patří k naší pobočce (tzn. máme pro ně event)
+        // Pokud je admin, vidí vše, co splňuje čas. 
+        // Pokud je branch, vidí jen ty, co mají záznam v relevantEans.
 
-        // Načti code_ranges
+        const tickets = allTickets.filter(t => {
+          // Časová podmínka
+          if (!t.firstScan || t.firstScan.toMillis() < startTimestamp.toMillis()) return false;
+
+          // Pobočková podmínka
+          if (user?.role === 'BRANCH') {
+            return relevantEans.has(t.ean);
+          }
+          return true;
+        });
+
+        // Načti code_ranges (oprava chybějící části)
         const rangesSnapshot = await getDocs(collection(db, 'code_ranges'));
         const ranges: Record<string, CodeRange> = {};
         rangesSnapshot.docs.forEach(doc => {
           ranges[doc.id] = { id: doc.id, ...doc.data() } as CodeRange;
         });
-
-        // Načti events
-        const eventsSnapshot = await getDocs(
-          query(
-            collection(db, 'events'),
-            where('timestamp', '>=', startTimestamp)
-          )
-        );
-        const events = eventsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Event[];
 
         // Vypočítej statistiky
         const totalVisitors = tickets.length;
@@ -83,9 +109,9 @@ export const Stats: React.FC = () => {
         const leftTickets = tickets.filter(t => t.status === 'LEFT');
         const averageVisitMinutes = leftTickets.length > 0
           ? Math.round(leftTickets.reduce((sum, t) => {
-              const duration = (t.lastScan.toMillis() - t.firstScan.toMillis()) / 1000 / 60;
-              return sum + duration;
-            }, 0) / leftTickets.length)
+            const duration = (t.lastScan.toMillis() - t.firstScan.toMillis()) / 1000 / 60;
+            return sum + duration;
+          }, 0) / leftTickets.length)
           : 0;
 
         const exitEvents = events.filter(e => e.type === 'EXIT');
@@ -119,7 +145,7 @@ export const Stats: React.FC = () => {
         // Statistiky podle hodin
         const byHour: Record<number, number> = {};
         for (let i = 0; i < 24; i++) byHour[i] = 0;
-        
+
         tickets.forEach(t => {
           if (t.firstScan) {
             const hour = t.firstScan.toDate().getHours();

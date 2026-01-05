@@ -80,6 +80,10 @@ export const EntryTerminal: React.FC = () => {
       const ticketRef = doc(db, 'tickets', normalizedEAN);
       const ticketSnap = await getDoc(ticketRef);
 
+      // Získej ID terminálu z URL (např. ?id=entry-3)
+      const urlParams = new URLSearchParams(window.location.search);
+      const terminalId = urlParams.get('id') || 'entry-1';
+
       if (ticketSnap.exists()) {
         // Vstupenka už existuje - zkontroluj status
         const ticket = { ean: normalizedEAN, ...ticketSnap.data() } as Ticket;
@@ -133,7 +137,7 @@ export const EntryTerminal: React.FC = () => {
           await setDoc(eventRef, {
             ean: normalizedEAN,
             type: 'ENTRY',
-            terminalId: 'entry-1',
+            terminalId: terminalId,
             timestamp: Timestamp.now(),
             remainingMinutes: ticket.remainingMinutes, // Použij zbývající čas
             overstayMinutes: 0,
@@ -153,7 +157,7 @@ export const EntryTerminal: React.FC = () => {
         await setDoc(eventRef, {
           ean: normalizedEAN,
           type: 'ENTRY',
-          terminalId: 'entry-1',
+          terminalId: terminalId,
           timestamp: Timestamp.now(),
           remainingMinutes: range.durationMinutes,
           overstayMinutes: 0,
