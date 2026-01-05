@@ -55,7 +55,7 @@ function App() {
           </Route>
 
           {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/kiosk/entry" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
 
           {/* 404 */}
           <Route path="*" element={

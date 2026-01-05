@@ -20,7 +20,7 @@ const USERS: Record<string, User & { password: string }> = {
         id: 'u1',
         username: 'admin',
         role: 'ADMIN',
-        password: import.meta.env.VITE_PWD_ADMIN || 'admin',
+        password: import.meta.env.VITE_PWD_ADMIN || '',
         branchName: 'Centrála'
     },
     'gameworld': {
@@ -29,7 +29,7 @@ const USERS: Record<string, User & { password: string }> = {
         role: 'BRANCH',
         branchId: 'gameworld',
         branchName: 'Game World (OC Šestka)',
-        password: import.meta.env.VITE_PWD_GAMEWORLD || 'gw',
+        password: import.meta.env.VITE_PWD_GAMEWORLD || '',
     },
     'cyberarcade': {
         id: 'u3',
@@ -37,7 +37,7 @@ const USERS: Record<string, User & { password: string }> = {
         role: 'BRANCH',
         branchId: 'cyberarcade',
         branchName: 'Cyber Arcade (Bartůňkova)',
-        password: import.meta.env.VITE_PWD_CYBERARCADE || 'ca',
+        password: import.meta.env.VITE_PWD_CYBERARCADE || '',
     },
     'gamestation': {
         id: 'u4',
@@ -45,7 +45,7 @@ const USERS: Record<string, User & { password: string }> = {
         role: 'BRANCH',
         branchId: 'gamestation',
         branchName: 'Game Station (Plzeň)',
-        password: import.meta.env.VITE_PWD_GAMESTATION || 'gs',
+        password: import.meta.env.VITE_PWD_GAMESTATION || '',
     },
     'gameplanet': {
         id: 'u5',
@@ -53,7 +53,7 @@ const USERS: Record<string, User & { password: string }> = {
         role: 'BRANCH',
         branchId: 'gameplanet',
         branchName: 'Game Planet (Olomouc)',
-        password: import.meta.env.VITE_PWD_GAMEPLANET || 'gp',
+        password: import.meta.env.VITE_PWD_GAMEPLANET || '',
     }
 };
 

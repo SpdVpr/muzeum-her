@@ -136,13 +136,7 @@ export const Login: React.FC = () => {
                     </button>
                 </form>
 
-                <div style={{ marginTop: spacing.xl, textAlign: 'center', fontSize: '0.875rem', color: colors.textSecondary }}>
-                    Demo účty:<br />
-                    admin / admin<br />
-                    ostrava / ostrava<br />
-                    praha / praha<br />
-                    brno / brno
-                </div>
+
             </div>
         </div>
     );
